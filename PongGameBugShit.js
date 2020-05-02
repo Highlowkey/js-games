@@ -1,5 +1,5 @@
 var sketchProc=function(processingInstance){ with (processingInstance){
-size(400, 400); 
+size(400, 400);
 frameRate(60);
 
 //============================================================================================================================ GAME STATES
@@ -88,9 +88,11 @@ var DOWNPress = false;
 var wPress = false;
 var sPress = false;
 
-var __keyPressed = function()
+var keyPressed = function()
 {
+	println("presesed");
 	if (keyCode === UP) {
+		println("up presesed");
 		UPPress = true;
 	}
 
@@ -107,8 +109,9 @@ var __keyPressed = function()
 	}
 };
 
-var __keyReleased = function()
+var keyReleased = function()
 {
+	println("released");
 	if (keyCode === UP) {
 		UPPress = false;
 	}
@@ -147,9 +150,11 @@ var checkKeyS = function() {
 
 //================================================================================================ CONTROLS
 var rightUpControl = function() {
+	// println("right up speed function");
 	if(UPPress === true)
 	{
 		paddleR.y -= paddleR.speed;
+		// println("up speed");
 	}
 };
 
@@ -213,7 +218,7 @@ var spawnObjects = function()
 {
 	fill(255, 0, 0);
 	rect(paddleL.x, paddleL.y, paddleL.w, paddleL.h);
-	
+
 	fill(0, 0, 255);
 	rect(paddleR.x, paddleR.y, paddleR.w, paddleR.h);
 
@@ -226,7 +231,7 @@ var spawnObjects = function()
 //================================================================================================ BALL MVMT
 var initiateBallMove = function()
 {
-	if (checkKeyS() || checkKeyW() || checkKeyDOWN() || checkKeyUP())
+	if (UPPress || DOWNPress || wPress || sPress)
 	{
 		ballMVMT = 1;
 	}
@@ -261,7 +266,7 @@ var ballCollision = function()
 
 
 
-var ballMove = function() 
+var ballMove = function()
 {
 	switch(ballMVMT)
 	{
@@ -307,7 +312,7 @@ var draw = function()
 
 		case 1:
 			background(0, 0, 0);
-			play();	
+			play();
 			break;
 
 		case 2:
@@ -321,4 +326,3 @@ var draw = function()
 //============================================================================================================================ STOP PROGRAM
 
 }};
-
