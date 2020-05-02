@@ -90,9 +90,7 @@ var sPress = false;
 
 var keyPressed = function()
 {
-	println("presesed");
 	if (keyCode === UP) {
-		println("up presesed");
 		UPPress = true;
 	}
 
@@ -111,7 +109,6 @@ var keyPressed = function()
 
 var keyReleased = function()
 {
-	println("released");
 	if (keyCode === UP) {
 		UPPress = false;
 	}
