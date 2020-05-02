@@ -83,6 +83,50 @@ var start = function()
 
 //========================================================================================================================== PLAY FUNCTION
 //================================================================================================ KEY CHECKS
+var UPPress = false;
+var DOWNPress = false;
+var wPress = false;
+var sPress = false;
+
+var __keyPressed = function()
+{
+	if (keyCode === UP) {
+		UPPress = true;
+	}
+
+	if (keyCode === DOWN) {
+		DOWNPress = true;
+	}
+
+	if (key.toString() === "w") {
+		wPress = true;
+	}
+
+	if (key.toString() === "s") {
+		sPress = true;
+	}
+};
+
+var __keyReleased = function()
+{
+	if (keyCode === UP) {
+		UPPress = false;
+	}
+
+	if (keyCode === DOWN) {
+		DOWNPress = false;
+	}
+
+	if (key.toString() === "w") {
+		wPress = false;
+	}
+
+	if (key.toString() === "s") {
+		sPress = false;
+	}
+};
+
+/*
 var checkKeyUP = function() {
 	return (__keyPressed && keyCode === UP);
 };
@@ -98,10 +142,42 @@ var checkKeyW = function() {
 var checkKeyS = function() {
 	return (__keyPressed && key.toString() === "s");
 };
-
+*/
 
 
 //================================================================================================ CONTROLS
+var rightUpControl = function() {
+	if(UPPress === true)
+	{
+		paddleR.y -= paddleR.speed;
+	}
+};
+
+var rightDownControl = function() {
+	if(DOWNPress === true)
+	{
+		paddleR.y += paddleR.speed;
+	}
+};
+
+var leftUpControl = function() {
+	if(wPress === true)
+	{
+		paddleL.y -= paddleL.speed;
+	}
+};
+
+var leftDownControl = function() {
+	if(sPress === true)
+	{
+		paddleL.y += paddleL.speed;
+	}
+};
+
+
+
+
+/*
 var rightUpControl = function() {
 	if(checkKeyUP() && paddleR.y > 10)
 	{
@@ -129,7 +205,7 @@ var leftDownControl = function() {
 		paddleL.y += paddleL.speed;
 	}
 };
-
+*/
 
 
 //================================================================================================ SPAWN OBJ
