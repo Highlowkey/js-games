@@ -4,12 +4,15 @@ frameRate(60);
 
 //---DRAW FUNCTION---
 var draw=function() {
+  background(0, 0, 0);
 
   //---ASTEROID SPAWNING---
-  var asteroid_x = random(1,400);
-  var asteroid_y = random(1,400);
-  var asteroid_rad = random(10,20);
-  ellipse(asteroid_x, asteroid_y, asteroid_rad, asteroid_rad);
+  if (second() == 1) {
+    var asteroid_x = random(1,400);
+    var asteroid_y = random(1,400);
+    var asteroid_rad = random(10,20);
+    ellipse(asteroid_x, asteroid_y, asteroid_rad, asteroid_rad);
+  }
   //-----------------------
 
 }
