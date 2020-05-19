@@ -12,7 +12,7 @@ var dPress = false;
 
 
 //-------------------------------------------------------------------------------------------SHIP OBJECTS
-var shipObj = function(x, y, speed) 
+var shipObj = function(x, y, speed)
 {
 	this.x = x;
 	this.y = y;
@@ -35,7 +35,7 @@ shipObj.prototype.move = function()
 	if (sPress === true) {
 		this.y += this.speed;
 	}
-	
+
 	if (aPress === true) {
 		this.x -= this.speed;
 	}
@@ -48,6 +48,34 @@ shipObj.prototype.move = function()
 var ship = new shipObj(200, 200, 2);
 //-------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------ASTEROID OBJECTS
+var asteroidObj = function(x, y, xSpeed, ySpeed, rad) {
+  this.x = x;
+  this.y = y;
+  this.xSpeed = xSpeed;
+  this.ySpeed = ySpeed;
+  this.rad = rad;
+};
+
+var asteroids = [];
+
+var drawAsteroids = function(asteroid) {
+  fill(255, 255, 255);
+  ellipse(asteroid.x, asteroid.y, asteroid.rad, asteroid.rad);
+};
+
+var asteroidUpdate = function(asteroid) {
+  asteroid.x += asteroid.xSpeed;
+  asteroid.y += asteroid.ySpeed;
+};
+
+var addAsteroid = function() {
+  if (frameCount%120 == 0) {
+    asteroids.push(new asteroidObj(random(100,300), random(100,300), random(-2, 2), random(-2, 2), random(20, 60)));
+  }
+};
+
+//-------------------------------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------------------------------KEY CHECKS
@@ -95,12 +123,16 @@ var keyReleased = function()
 
 
 //-------------------------------------------------------------------------------------------DRAW FUNCTION
-var draw = function() 
+var draw = function()
 {
 	background(0, 0, 0);
 
 	ship.draw();
 	ship.move();
+
+  addAsteroid();
+  asteroids.forEach(drawAsteroids);
+  asteroids.forEach(asteroidUpdate);
 };
 
 }};
