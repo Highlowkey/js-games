@@ -11,7 +11,7 @@ var dPress = false;
 
 
 
-//-------------------------------------------------------------------------------------------GAME OBJECTS
+//-------------------------------------------------------------------------------------------SHIP OBJECTS
 var shipObj = function(x, y, speed) 
 {
 	this.x = x;
@@ -19,6 +19,31 @@ var shipObj = function(x, y, speed)
 	this.speed = speed;
 	this.w = 15;
 	this.h = 15;
+};
+
+shipObj.prototype.draw = function()
+{
+	fill(255, 0, 0);
+	ellipse(this.x, this.y, this.w, this.h);
+};
+
+shipObj.prototype.move = function()
+{
+	if (wPress === true) {
+		this.y -= this.speed;
+	}
+
+	if (sPress === true) {
+		this.y += this.speed;
+	}
+	
+	if (aPress === true) {
+		this.x -= this.speed;
+	}
+
+	if (dPress === true) {
+		this.x += this.speed;
+	}
 };
 
 var ship = new shipObj(200, 200, 2);
@@ -70,54 +95,13 @@ var keyReleased = function()
 
 
 
-//-------------------------------------------------------------------------------------------SHIP FUNCTIONS
-var shipDraw = function() 
-{
-	fill(255, 0, 0);
-	ellipse(ship.x, ship.y, ship.w, ship.h);
-};
-
-var shipMove = function() 
-{
-	if (wPress === true) {
-		ship.y -= ship.speed;
-	}
-
-	if (sPress === true) {
-		ship.y += ship.speed;
-	}
-	
-	if (aPress === true) {
-		ship.x -= ship.speed;
-	}
-
-	if (dPress === true) {
-		ship.x += ship.speed;
-	}
-};
-//-------------------------------------------------------------------------------------------
-
-
-
 //-------------------------------------------------------------------------------------------DRAW FUNCTION
 var draw = function() 
 {
 	background(0, 0, 0);
 
-	shipDraw();
-	shipMove();
-
-/*  ---ASTEROID SPAWNING---
-//patrick's original attempt at spawning asteroids in the draw function
-
-  if (second() == 1) {
-    var asteroid_x = random(1,400);
-    var asteroid_y = random(1,400);
-    var asteroid_rad = random(10,20);
-    ellipse(asteroid_x, asteroid_y, asteroid_rad, asteroid_rad);
-  }
-*/
-
+	ship.draw();
+	ship.move();
 };
 
 }};
