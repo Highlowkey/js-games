@@ -71,7 +71,7 @@ var asteroidUpdate = function(asteroid) {
 
 var addAsteroid = function() {
   if (frameCount%120 == 0) {
-    asteroids.push(new asteroidObj(random(100,300), random(100,300), random(-2, 2), random(-2, 2), random(20, 60)));
+    asteroids.push(new asteroidObj(random(100,300), -50, random(-2, 2), random(-2, 2), random(20, 60)));
   }
 };
 
