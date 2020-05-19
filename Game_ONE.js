@@ -1,6 +1,12 @@
 var sketchProc=function(processingInstance){ with (processingInstance){
 size(400, 400);
 frameRate(60);
+/*-------------------------------------------------------------------------------------------GAME STATES
+0 = START
+1 = LEVEL ONE
+*/
+
+var $ = 1;
 
 //-------------------------------------------------------------------------------------------VAR DEFINITION
 var wPress = false;
@@ -131,14 +137,24 @@ var keyReleased = function()
 //-------------------------------------------------------------------------------------------DRAW FUNCTION
 var draw = function()
 {
-	background(0, 0, 0);
+	switch($)
+	{
+		case 0:
 
-	ship.draw();
-	ship.move();
+			break;
 
-  addAsteroid();
-  asteroids.forEach(drawAsteroids);
-  asteroids.forEach(asteroidUpdate);
+		case 1:
+			background(0, 0, 0);
+
+			ship.draw();
+			ship.move();
+
+		  	addAsteroid();
+		  	asteroids.forEach(drawAsteroids);
+		  	asteroids.forEach(asteroidUpdate);
+			
+			break;
+	}
 };
 
 }};
