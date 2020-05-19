@@ -17,35 +17,43 @@ var shipObj = function(x, y, speed)
 	this.x = x;
 	this.y = y;
 	this.speed = speed;
+  this.angle = 0;
 	this.img = loadImage("ship.jpg");
 };
 
 shipObj.prototype.draw = function()
 {
-	imageMode(CENTER);
-	image(this.img, this.x, this.y);
+  pushMatrix();
+  translate(this.x, this.y);
+  rotate(this.angle);
+  imageMode(CENTER);
+	image(this.img, 0, 0);
+  popMatrix();
 };
 
 shipObj.prototype.move = function()
 {
 	if (wPress === true) {
-		this.y -= this.speed;
+		this.y += this.speed * sin(this.angle-3.14/2);
+    this.x += this.speed * cos(this.angle-3.14/2);
 	}
 
 	if (sPress === true) {
-		this.y += this.speed;
+		this.y -= this.speed * sin(this.angle-3.14/2);
+    this.x -= this.speed * cos(this.angle-3.14/2);
 	}
 
 	if (aPress === true) {
-		this.x -= this.speed;
+		this.angle -= .1;
 	}
 
 	if (dPress === true) {
-		this.x += this.speed;
+    this.angle += .1;
 	}
 };
 
 var ship = new shipObj(200, 200, 2);
+fill(0, 0, 0);
 //-------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------ASTEROID OBJECTS
@@ -83,7 +91,6 @@ var keyPressed = function()
 {
 	if (key.toString() === "w") {
 		wPress = true;
-		println("W");
 	}
 
 	if (key.toString() === "s") {
@@ -119,7 +126,6 @@ var keyReleased = function()
 	}
 };
 //-------------------------------------------------------------------------------------------
-
 
 
 //-------------------------------------------------------------------------------------------DRAW FUNCTION
