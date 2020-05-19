@@ -17,14 +17,13 @@ var shipObj = function(x, y, speed)
 	this.x = x;
 	this.y = y;
 	this.speed = speed;
-	this.w = 15;
-	this.h = 15;
+	this.img = loadImage("ship.jpg");
 };
 
 shipObj.prototype.draw = function()
 {
-	fill(255, 0, 0);
-	ellipse(this.x, this.y, this.w, this.h);
+	imageMode(CENTER);
+	image(this.img, this.x, this.y);
 };
 
 shipObj.prototype.move = function()
