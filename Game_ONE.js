@@ -149,10 +149,10 @@ var draw = function()
 			ship.draw();
 			ship.move();
 
-		  	addAsteroid();
-		  	asteroids.forEach(drawAsteroids);
-		  	asteroids.forEach(asteroidUpdate);
-			
+		  addAsteroid();
+		  asteroids.forEach(drawAsteroids);
+		  asteroids.forEach(asteroidUpdate);
+
 			break;
 	}
 };
