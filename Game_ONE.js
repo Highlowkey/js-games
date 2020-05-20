@@ -24,7 +24,7 @@ var shipObj = function(x, y, speed)
 	this.y = y;
 	this.speed = speed;
   this.angle = 0;
-	this.img = loadImage("ship.jpg");
+	this.img = loadImage("blackship.jpg");
 };
 
 shipObj.prototype.draw = function()
