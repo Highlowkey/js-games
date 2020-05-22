@@ -21,6 +21,8 @@ var topBound = 0;
 var bottomBound = 500;
 var leftBound = 0;
 var rightBound = 800;
+
+var numAsteroids = 0;
 //-------------------------------------------------------------------------------------------
 
 
@@ -123,6 +125,27 @@ var asteroidUpdate = function(asteroid) {
 	asteroid.y += asteroid.ySpeed;
 };
 
+var countAsteroid = function()
+{
+	println(asteroids.length);
+};
+//-------PICK ONE-------
+//-------CODE ONE-------
+var addAsteroid = function() {
+  if (frameCount%120 == 0) {
+    asteroids.push(new asteroidObj(random(0,400), -40, random(-.5, .5), random(1, 2), random(20, 40)));
+		asteroids.push(new asteroidObj(-40, random(0,400), random(1, 2), random(-.5, .5), random(20, 40)));
+		numAsteroids += 2;
+  }
+};
+
+var checkToRemoveAsteroid = function(asteroid) {
+	if (asteroid.x > 500 || asteroid.x < -100 || asteroid.y > 500 || asteroid.y < -100) {
+		asteroids.shift();
+		numAsteroids -= 1;
+	}
+}
+//-------CODE TWO-------
 var createAsteroid = function() {
 	if (frameCount%120 == 0) {
 		asteroids.push(new asteroidObj(random(100,300), random(100, 300), 0, 0, random(20, 60)));
@@ -134,11 +157,40 @@ var destroyAsteroid = function() {
 		asteroids.shift();
 	}
 };
+//----------------------
 
-var countAsteroid = function()
-{
-	println(asteroids.length);
-};
+var checkAllCollisions = function() {
+	for(var i = 0; i < numAsteroids; i++) {
+		for(var j = 0; j < numAsteroids; j++) {
+			if (j != i) {
+				checkAsteroidCollision(asteroids[i], asteroids[j]);
+			}
+		}
+		checkShipCollision(asteroids[i])
+	}
+}
+
+var checkShipCollision = function(asteroid) {
+	if (dist(asteroid.x, asteroid.y, ship.x, ship.y) < asteroid.rad + 5) {
+		ship.x = 1000;
+		ship.y = 1000;
+		println("Game Over");
+	}
+}
+
+var checkAsteroidCollision = function(asteroid1, asteroid2) {
+	if (dist(asteroid1.x, asteroid1.y, asteroid2.x, asteroid2.y) < (asteroid1.rad + asteroid2.rad)/2) {
+		println("BOOM!")
+		var tempX = asteroid1.xSpeed;
+		var tempY = asteroid1.ySpeed;
+		asteroid1.xSpeed = asteroid2.xSpeed;
+		asteroid1.ySpeed = asteroid2.ySpeed;
+		asteroid2.xSpeed = tempX;
+		asteroid2.ySpeed = tempY;
+		asteroidUpdate(asteroid1);
+		asteroidUpdate(asteroid2);
+	}
+}
 
 
 
@@ -228,12 +280,19 @@ var shipState1 = function()
 
 var asteroidState1 = function()
 {
-	createAsteroid();
+	//PICK ONE
+	// createAsteroid();
+	addAsteroid();
+
+	checkAllCollisions();
 
 	asteroids.forEach(drawAsteroid);
 	asteroids.forEach(asteroidUpdate);
 
-	destroyAsteroid();
+	//PICK ONE
+	asteroids.forEach(checkToRemoveAsteroid);
+	//destroyAsteroid();
+
 	countAsteroid();
 };
 
@@ -253,7 +312,7 @@ var draw = function()
 
 			shipState1();
 			asteroidState1();
-			
+
 			break;
 	}
 };
