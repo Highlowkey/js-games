@@ -186,7 +186,7 @@ var checkToRemoveAsteroid = function(asteroid) {
 		asteroids.splice(asteroids.indexOf(asteroid), 1);
 		numAsteroids -= 1;
 	}
-}
+};
 
 var checkAllCollisions = function() {
 	for(var i = 0; i < numAsteroids; i++) {
@@ -195,9 +195,9 @@ var checkAllCollisions = function() {
 				checkAsteroidCollision(asteroids[i], asteroids[j]);
 			}
 		}
-		checkShipCollision(asteroids[i])
+		checkShipCollision(asteroids[i]);
 	}
-}
+};
 
 var checkShipCollision = function(asteroid) {
 	if (dist(asteroid.x, asteroid.y, ship.x, ship.y) < asteroid.rad + 5) {
@@ -211,11 +211,7 @@ var checkShipCollision = function(asteroid) {
 			numAsteroids--;
 		}
 	}
-}
-
-var checkAsteroidID = function(asteroid) {
-
-}
+};
 
 var checkAsteroidCollision = function(asteroid1, asteroid2) {
 	if (dist(asteroid1.x, asteroid1.y, asteroid2.x, asteroid2.y) < (asteroid1.rad + asteroid2.rad)/2) {
@@ -228,7 +224,7 @@ var checkAsteroidCollision = function(asteroid1, asteroid2) {
 		asteroidUpdate(asteroid1);
 		asteroidUpdate(asteroid2);
 	}
-}
+};
 
 
 
