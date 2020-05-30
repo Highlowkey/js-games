@@ -46,6 +46,7 @@ var totalWidth = rightBound * 2;
 var totalHeight = bottomBound * 2;
 
 var spawnLocation = 0; //used for asteroid spawning quadrant (0 - up, 1 - left, 2 - down, 3 - right)
+var score = 0;
 //-------------------------------------------------------------------------------------------
 
 
@@ -125,21 +126,24 @@ shipObj.prototype.move = function() {
 
 
 //----------------------------------------------------------------------------------------------------------------------------ASTEROID OBJECTS
-var asteroidObj = function(x, y, xSpeed, ySpeed, rad) {
+var asteroidObj = function(x, y, xSpeed, ySpeed, rad, isLoot) {
 	this.x = x;
 	this.y = y;
 	this.xSpeed = xSpeed;
 	this.ySpeed = ySpeed;
 	this.rad = rad;
+	this.isLoot = isLoot;
 };
 
 var asteroids = [];
 
 
-
 //-------------------------------------------------------------------------------------------ASTEROID FUNCTIONS
 var drawAsteroid = function(asteroid) {
 	fill(255, 255, 255);
+	if (asteroid.isLoot) {
+		fill(255, 255, 0);
+	}
 	ellipse(asteroid.x, asteroid.y, asteroid.rad, asteroid.rad);
 };
 
@@ -157,19 +161,18 @@ var addAsteroid = function() {
 	var size = random(20, 40);
 	var fastSpeed = random(-2, 2);
 	var slowSpeed = random(-.5, .5)
-	println(spawnLocation);
 	switch(spawnLocation) {
 		case 0:
-			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2, slowSpeed, fastSpeed, size));
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2, slowSpeed, fastSpeed, size, false));
 			break;
 		case 1:
-			asteroids.push(new asteroidObj(ship.x - rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size));
+			asteroids.push(new asteroidObj(ship.x - rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, false));
 			break;
 		case 2:
-			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2, slowSpeed, fastSpeed, size));
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2, slowSpeed, fastSpeed, size, false));
 			break;
 		case 3:
-			asteroids.push(new asteroidObj(ship.x + rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size));
+			asteroids.push(new asteroidObj(ship.x + rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, true));
 			spawnLocation = 0;
 			break;
 	}
@@ -178,10 +181,10 @@ var addAsteroid = function() {
 };
 
 var checkToRemoveAsteroid = function(asteroid) {
-	// if (asteroids[0].x > ship.x + rightBound || asteroids[0].x < ship.x - rightBound || asteroids[0].y > ship.y + bottomBound || asteroids[0].y < ship.y - bottomBound) {
-	// 	asteroids.shift();
-	// 	numAsteroids -= 1;
-	// }
+	if (asteroid.x > ship.x + rightBound || asteroid.x < ship.x - rightBound || asteroid.y > ship.y + bottomBound || asteroid.y < ship.y - bottomBound) {
+		asteroids.splice(asteroids.indexOf(asteroid));
+		numAsteroids -= 1;
+	}
 }
 
 var checkAllCollisions = function() {
@@ -196,11 +199,21 @@ var checkAllCollisions = function() {
 }
 
 var checkShipCollision = function(asteroid) {
-	// println(dist(asteroid.x, asteroid.y, ship.x, ship.y));
 	if (dist(asteroid.x, asteroid.y, ship.x, ship.y) < asteroid.rad + 5) {
-		$ = 2;
-		println("Game Over");
+		if (!asteroid.isLoot) {
+			$ = 2;
+			println("Game Over");
+		}
+		else {
+			score +=1 ;
+			asteroids.splice(asteroids.indexOf(asteroid), 1);
+			numAsteroids--;
+		}
 	}
+}
+
+var checkAsteroidID = function(asteroid) {
+
 }
 
 var checkAsteroidCollision = function(asteroid1, asteroid2) {

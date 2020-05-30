@@ -3,13 +3,17 @@ frameRate(60);
 size(800, 500);
 
 /*----------------------------------------------------------------------------------------------------CHANGE LOG
-Patrick changes
+BEFORE NO DATE:
 - changed asteroids to periodically spawn at periphery of screen
 - change asteroids to be removed when too far away from screen
 - realized this could mean we could hypothetically have no bounds on whole map
 - it would just procedurally generate asteroids/loot wherever the ship flies
 - added game over state (state 2, idk if thats ok just wanted to mess with)
 - added change log
+
+MAY 30:
+- changed numAsteroids updating
+- collisions working
 */
 
 
@@ -81,7 +85,7 @@ var shipObj = function(x, y, speed) {
 	this.y = y;
 	this.speed = speed;
  	this.angle = 0;
-	this.img = loadImage("ship.jpg");
+	this.img = loadImage("blackship.jpg");
 };
 
 var ship = new shipObj(totalWidth/2, totalHeight/2, 2);
@@ -121,21 +125,25 @@ shipObj.prototype.move = function() {
 
 
 //----------------------------------------------------------------------------------------------------------------------------ASTEROID OBJECTS
-var asteroidObj = function(x, y, xSpeed, ySpeed, rad) {
+var asteroidObj = function(x, y, xSpeed, ySpeed, rad, isLoot) {
 	this.x = x;
 	this.y = y;
 	this.xSpeed = xSpeed;
 	this.ySpeed = ySpeed;
 	this.rad = rad;
+	this.isLoot = isLoot;
 };
 
 var asteroids = [];
-
+var loot = [];
 
 
 //-------------------------------------------------------------------------------------------ASTEROID FUNCTIONS
 var drawAsteroid = function(asteroid) {
 	fill(255, 255, 255);
+	if (asteroid.isLoot) {
+		fill(255, 255, 0);
+	}
 	ellipse(asteroid.x, asteroid.y, asteroid.rad, asteroid.rad);
 };
 
@@ -153,26 +161,31 @@ var addAsteroid = function() {
 	var size = random(20, 40);
 	var fastSpeed = random(-2, 2);
 	var slowSpeed = random(-.5, .5)
-	switch (spawnLocation) {
+	println(spawnLocation);
+	switch(spawnLocation) {
 		case 0:
-			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2, 0, 0, size));
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2, slowSpeed, fastSpeed, size, false));
+			break;
 		case 1:
-			asteroids.push(new asteroidObj(ship.x - rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), 0, 0, size));
+			asteroids.push(new asteroidObj(ship.x - rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, false));
+			break;
 		case 2:
-			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2, 0, 0, size));
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2, slowSpeed, fastSpeed, size, false));
+			break;
 		case 3:
-			asteroids.push(new asteroidObj(ship.x + rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), 0, 0, size));
+			asteroids.push(new asteroidObj(ship.x + rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, true));
 			spawnLocation = 0;
+			break;
 	}
 	numAsteroids++;
 	spawnLocation++;
 };
 
 var checkToRemoveAsteroid = function(asteroid) {
-	if (asteroids[0].x > ship.x + rightBound || asteroids[0].x < ship.x - rightBound || asteroids[0].y > ship.y + bottomBound || asteroids[0].y < ship.y - bottomBound) {
-		asteroids.shift();
-		numAsteroids -= 1;
-	}
+	// if (asteroids[0].x > ship.x + rightBound || asteroids[0].x < ship.x - rightBound || asteroids[0].y > ship.y + bottomBound || asteroids[0].y < ship.y - bottomBound) {
+	// 	asteroids.shift();
+	// 	numAsteroids -= 1;
+	// }
 }
 
 var checkAllCollisions = function() {
@@ -187,6 +200,7 @@ var checkAllCollisions = function() {
 }
 
 var checkShipCollision = function(asteroid) {
+	// println(dist(asteroid.x, asteroid.y, ship.x, ship.y));
 	if (dist(asteroid.x, asteroid.y, ship.x, ship.y) < asteroid.rad + 5) {
 		$ = 2;
 		println("Game Over");
@@ -304,7 +318,7 @@ var asteroidState1 = function()
 	asteroids.forEach(asteroidUpdate);
 	asteroids.forEach(checkToRemoveAsteroid);
 
-	countAsteroid();
+	// countAsteroid();
 };
 
 
