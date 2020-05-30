@@ -1,6 +1,24 @@
 var sketchProc=function(processingInstance){ with (processingInstance){
-size(800, 500);
 frameRate(60);
+size(800, 500);
+
+/*----------------------------------------------------------------------------------------------------CHANGE LOG
+BEFORE NO DATE:
+- changed asteroids to periodically spawn at periphery of screen
+- change asteroids to be removed when too far away from screen
+- realized this could mean we could hypothetically have no bounds on whole map
+- it would just procedurally generate asteroids/loot wherever the ship flies
+- added game over state (state 2, idk if thats ok just wanted to mess with)
+- added change log
+
+MAY 30:
+- changed numAsteroids updating
+- collisions working
+*/
+
+
+
+
 /*----------------------------------------------------------------------------------------------------------------------------GAME STATES
 0 = START
 1 = LEVEL ONE
@@ -23,6 +41,11 @@ var leftBound = 0;
 var rightBound = 800;
 
 var numAsteroids = 0;
+
+var totalWidth = rightBound * 2;
+var totalHeight = bottomBound * 2;
+
+var spawnLocation = 0; //used for asteroid spawning quadrant (0 - up, 1 - left, 2 - down, 3 - right)
 //-------------------------------------------------------------------------------------------
 
 
@@ -36,7 +59,7 @@ var buttonObj = function(x, y, w, h)  {
 	this.click = false;
 };
 
-var startBT = new buttonObj (200, 200, 100, 50);
+var startBT = new buttonObj (bottomBound/2, topBound/2, 100, 50);
 
 
 
@@ -62,17 +85,17 @@ var shipObj = function(x, y, speed) {
 	this.y = y;
 	this.speed = speed;
  	this.angle = 0;
-	this.img = loadImage("ship.jpg");
+	this.img = loadImage("blackship.jpg");
 };
 
-var ship = new shipObj(200, 200, 2);
+var ship = new shipObj(totalWidth/2, totalHeight/2, 2);
 
 
 
 //-------------------------------------------------------------------------------------------SHIP FUNCTIONS
 shipObj.prototype.draw = function() {
 	pushMatrix();
-	translate(this.x, this.y);
+	translate(ship.x, ship.y);
 	rotate(this.angle);
 	imageMode(CENTER);
 	image(this.img, 0, 0);
@@ -129,35 +152,37 @@ var countAsteroid = function()
 {
 	println(asteroids.length);
 };
-//-------PICK ONE-------
-//-------CODE ONE-------
+
 var addAsteroid = function() {
-  if (frameCount%120 == 0) {
-    asteroids.push(new asteroidObj(random(0,400), -40, random(-.5, .5), random(1, 2), random(20, 40)));
-		asteroids.push(new asteroidObj(-40, random(0,400), random(1, 2), random(-.5, .5), random(20, 40)));
-		numAsteroids += 2;
-  }
+	var size = random(20, 40);
+	var fastSpeed = random(-2, 2);
+	var slowSpeed = random(-.5, .5)
+	println(spawnLocation);
+	switch(spawnLocation) {
+		case 0:
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2, slowSpeed, fastSpeed, size));
+			break;
+		case 1:
+			asteroids.push(new asteroidObj(ship.x - rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size));
+			break;
+		case 2:
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2, slowSpeed, fastSpeed, size));
+			break;
+		case 3:
+			asteroids.push(new asteroidObj(ship.x + rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size));
+			spawnLocation = 0;
+			break;
+	}
+	numAsteroids++;
+	spawnLocation++;
 };
 
 var checkToRemoveAsteroid = function(asteroid) {
-	if (asteroid.x > 500 || asteroid.x < -100 || asteroid.y > 500 || asteroid.y < -100) {
-		asteroids.shift();
-		numAsteroids -= 1;
-	}
+	// if (asteroids[0].x > ship.x + rightBound || asteroids[0].x < ship.x - rightBound || asteroids[0].y > ship.y + bottomBound || asteroids[0].y < ship.y - bottomBound) {
+	// 	asteroids.shift();
+	// 	numAsteroids -= 1;
+	// }
 }
-//-------CODE TWO-------
-var createAsteroid = function() {
-	if (frameCount%120 == 0) {
-		asteroids.push(new asteroidObj(random(100,300), random(100, 300), 0, 0, random(20, 60)));
-	}
-};
-
-var destroyAsteroid = function() {
-	if (asteroids.length > 6) {
-		asteroids.shift();
-	}
-};
-//----------------------
 
 var checkAllCollisions = function() {
 	for(var i = 0; i < numAsteroids; i++) {
@@ -171,16 +196,15 @@ var checkAllCollisions = function() {
 }
 
 var checkShipCollision = function(asteroid) {
+	// println(dist(asteroid.x, asteroid.y, ship.x, ship.y));
 	if (dist(asteroid.x, asteroid.y, ship.x, ship.y) < asteroid.rad + 5) {
-		ship.x = 1000;
-		ship.y = 1000;
+		$ = 2;
 		println("Game Over");
 	}
 }
 
 var checkAsteroidCollision = function(asteroid1, asteroid2) {
 	if (dist(asteroid1.x, asteroid1.y, asteroid2.x, asteroid2.y) < (asteroid1.rad + asteroid2.rad)/2) {
-		println("BOOM!")
 		var tempX = asteroid1.xSpeed;
 		var tempY = asteroid1.ySpeed;
 		asteroid1.xSpeed = asteroid2.xSpeed;
@@ -280,20 +304,17 @@ var shipState1 = function()
 
 var asteroidState1 = function()
 {
-	//PICK ONE
-	// createAsteroid();
-	addAsteroid();
+	if (frameCount%120 == 0) {
+		addAsteroid();
+	}
 
 	checkAllCollisions();
 
 	asteroids.forEach(drawAsteroid);
 	asteroids.forEach(asteroidUpdate);
-
-	//PICK ONE
 	asteroids.forEach(checkToRemoveAsteroid);
-	//destroyAsteroid();
 
-	countAsteroid();
+	// countAsteroid();
 };
 
 
@@ -310,10 +331,15 @@ var draw = function()
 		case 1:
 			background(0, 0, 0);
 
-			shipState1();
+			pushMatrix();
+			translate(400-ship.x, 250-ship.y);
 			asteroidState1();
+			shipState1();
+			popMatrix();
 
 			break;
+		case 2:
+			background(255, 255, 255);
 	}
 };
 
