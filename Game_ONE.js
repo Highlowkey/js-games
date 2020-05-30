@@ -372,6 +372,11 @@ var draw = function()
 		case 1:
 			background(0, 0, 0);
 
+			// score text
+			fill(255, 0, 0);
+			textSize(45);
+			text(score, 10, 40);
+
 			pushMatrix();
 			translate(400-ship.x, 250-ship.y);
 			asteroidState1();
