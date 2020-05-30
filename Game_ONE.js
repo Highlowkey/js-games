@@ -46,6 +46,7 @@ var totalWidth = rightBound * 2;
 var totalHeight = bottomBound * 2;
 
 var spawnLocation = 0; //used for asteroid spawning quadrant (0 - up, 1 - left, 2 - down, 3 - right)
+
 var score = 0;
 //-------------------------------------------------------------------------------------------
 
@@ -60,7 +61,7 @@ var buttonObj = function(x, y, w, h)  {
 	this.click = false;
 };
 
-var startBT = new buttonObj (bottomBound/2, topBound/2, 100, 50);
+var startBT = new buttonObj (rightBound/2, bottomBound/2, 100, 50);
 
 
 
