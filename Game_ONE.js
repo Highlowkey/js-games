@@ -14,6 +14,8 @@ BEFORE NO DATE:
 MAY 30:
 - changed numAsteroids updating
 - collisions working
+- added sprites for asteroids and pseudo-random spawning
+- changed asteroid speed determination
 */
 
 
@@ -127,13 +129,40 @@ shipObj.prototype.move = function() {
 
 
 //----------------------------------------------------------------------------------------------------------------------------ASTEROID OBJECTS
-var asteroidObj = function(x, y, xSpeed, ySpeed, rad, isLoot) {
+var asteroidObj = function(x, y, xSpeed, ySpeed, size, isLoot) {
 	this.x = x;
 	this.y = y;
 	this.xSpeed = xSpeed;
 	this.ySpeed = ySpeed;
-	this.rad = rad;
+	this.size = size;
 	this.isLoot = isLoot;
+
+	switch(size) {
+		case 1:
+			this.rad = 31;
+			this.img = loadImage("31x31_asteroid.png");
+			break;
+		case 2:
+			this.rad = 41;
+			this.img = loadImage("41x41_asteroid.png");
+			break;
+		case 3:
+			this.rad = 51;
+			this.img = loadImage("51x51_asteroid.png");
+			break;
+		case 4:
+			this.rad = 71;
+			this.img = loadImage("71x71_asteroid.png");
+			break;
+		default:
+			println("shouldn't be here")
+			break;
+	}
+
+	if (isLoot) {
+		this.rad = 11;
+		this.img = loadImage("loot_asteroid.png");
+	}
 };
 
 var asteroids = [];
@@ -146,6 +175,8 @@ var drawAsteroid = function(asteroid) {
 		fill(255, 255, 0);
 	}
 	ellipse(asteroid.x, asteroid.y, asteroid.rad, asteroid.rad);
+	imageMode(CENTER);
+	image(asteroid.img, asteroid.x, asteroid.y);
 };
 
 var asteroidUpdate = function(asteroid) {
@@ -159,21 +190,21 @@ var countAsteroid = function()
 };
 
 var addAsteroid = function() {
-	var size = random(20, 40);
-	var fastSpeed = random(-2, 2);
-	var slowSpeed = random(-.5, .5)
+	var size = round(random(1, 4));
+	var fastSpeed = random(0, 2);
+	var slowSpeed = random(-.5, .5);
 	switch(spawnLocation) {
-		case 0:
-			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2, slowSpeed, fastSpeed, size, false));
+		case 0: //top of screen
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2 - 71, slowSpeed, fastSpeed, size, false));
 			break;
-		case 1:
-			asteroids.push(new asteroidObj(ship.x - rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, false));
+		case 1: //left of screen
+			asteroids.push(new asteroidObj(ship.x - rightBound/2 - 71, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, false));
 			break;
-		case 2:
-			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2, slowSpeed, fastSpeed, size, false));
-			break;
+		case 2: //bottom of screen
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2 + 71, slowSpeed, -fastSpeed, size, false));
+			break; //right of screen
 		case 3:
-			asteroids.push(new asteroidObj(ship.x + rightBound/2, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, true));
+			asteroids.push(new asteroidObj(ship.x + rightBound/2 + 71, random(ship.y - bottomBound/2, ship.y + bottomBound/2), -fastSpeed, slowSpeed, size, true));
 			spawnLocation = 0;
 			break;
 	}
