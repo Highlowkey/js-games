@@ -183,7 +183,7 @@ var addAsteroid = function() {
 
 var checkToRemoveAsteroid = function(asteroid) {
 	if (asteroid.x > ship.x + rightBound || asteroid.x < ship.x - rightBound || asteroid.y > ship.y + bottomBound || asteroid.y < ship.y - bottomBound) {
-		asteroids.splice(asteroids.indexOf(asteroid));
+		asteroids.splice(asteroids.indexOf(asteroid), 1);
 		numAsteroids -= 1;
 	}
 }
