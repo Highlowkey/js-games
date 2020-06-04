@@ -33,6 +33,8 @@ var wPress = false;
 var sPress = false;
 var aPress = false;
 var dPress = false;
+var rPress = false;
+var fired = false;
 
 var mouseLeftPress = false;
 var mouseRightPress = true;
@@ -81,7 +83,35 @@ buttonObj.prototype.press = function() {
 	}
 };
 
+//-------------------------------------------------------------------------------------------LASER FUNCTIONS
+var lasers = [];
 
+var laserObj = function(x, y, speed, angle) {
+	this.x = x;
+	this.y = y;
+	this.speed = speed;
+	this.angle = angle;
+};
+
+var drawLaser = function(laser) {
+	fill(255, 0, 0);
+	ellipse(laser.x, laser.y, 10, 10);
+};
+
+var updateLaser = function(laser) {
+	laser.y += laser.speed * sin(laser.angle-3.14/2);
+	laser.x += laser.speed * cos(laser.angle-3.14/2);
+};
+
+var checkLaserCollisions = function(laser) {
+	for (var i = 0; i < numAsteroids; i++) {
+		if (dist(laser.x, laser.y, asteroids[i].x, asteroids[i].y) < (asteroids[i].rad + 10)/2) {
+			lasers.splice(lasers.indexOf(laser), 1);
+			asteroids.splice(asteroids.indexOf(asteroids[i]), 1);
+			numAsteroids--;
+		}
+	}
+};
 
 //----------------------------------------------------------------------------------------------------------------------------SHIP OBJECTS
 var shipObj = function(x, y, speed) {
@@ -94,8 +124,6 @@ var shipObj = function(x, y, speed) {
 
 var ship = new shipObj(totalWidth/2, totalHeight/2, 2);
 
-
-
 //-------------------------------------------------------------------------------------------SHIP FUNCTIONS
 shipObj.prototype.draw = function() {
 	pushMatrix();
@@ -103,6 +131,9 @@ shipObj.prototype.draw = function() {
 	rotate(this.angle);
 	imageMode(CENTER);
 	image(this.img, 0, 0);
+	// ellipse(0, -10, 12, 12);
+	// ellipse(0, 6, 20, 20);
+	// ellipses used for collision detection
 	popMatrix();
 };
 
@@ -122,11 +153,16 @@ shipObj.prototype.move = function() {
 	}
 
 	if (dPress === true) {
-    	this.angle += .1;
+    this.angle += .1;
+	}
+
+	if (rPress === true) {
+		if (fired === false) {
+			lasers.push(new laserObj(this.x, this.y, this.speed, this.angle));
+		}
+		fired = true;
 	}
 };
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------ASTEROID OBJECTS
 var asteroidObj = function(x, y, xSpeed, ySpeed, size, isLoot) {
@@ -136,6 +172,7 @@ var asteroidObj = function(x, y, xSpeed, ySpeed, size, isLoot) {
 	this.ySpeed = ySpeed;
 	this.size = size;
 	this.isLoot = isLoot;
+	this.numHits = 0;
 
 	switch(size) {
 		case 1:
@@ -163,6 +200,7 @@ var asteroidObj = function(x, y, xSpeed, ySpeed, size, isLoot) {
 		this.rad = 11;
 		this.img = loadImage("loot_asteroid.png");
 	}
+	this.mass = 3.14 * pow(this.rad/2, 3);
 };
 
 var asteroids = [];
@@ -231,7 +269,8 @@ var checkAllCollisions = function() {
 };
 
 var checkShipCollision = function(asteroid) {
-	if (dist(asteroid.x, asteroid.y, ship.x, ship.y) < asteroid.rad + 5) {
+	if ((dist(asteroid.x, asteroid.y, ship.x, ship.y - 10) < (asteroid.rad + 12)/2) ||
+			 (dist(asteroid.x, asteroid.y, ship.x, ship.y + 6) < (asteroid.rad + 20)/2)) {
 		if (!asteroid.isLoot) {
 			$ = 2;
 			println("Game Over");
@@ -246,10 +285,10 @@ var checkShipCollision = function(asteroid) {
 
 var checkAsteroidCollision = function(asteroid1, asteroid2) {
 	if (dist(asteroid1.x, asteroid1.y, asteroid2.x, asteroid2.y) < (asteroid1.rad + asteroid2.rad)/2) {
-		var tempX = asteroid1.xSpeed;
-		var tempY = asteroid1.ySpeed;
-		asteroid1.xSpeed = asteroid2.xSpeed;
-		asteroid1.ySpeed = asteroid2.ySpeed;
+		var tempX = asteroid2.xSpeed * (asteroid2.mass - asteroid1.mass)/(asteroid1.mass + asteroid2.mass) + asteroid1.xSpeed * (2 * asteroid1.mass)/(asteroid1.mass + asteroid2.mass);
+		var tempY = asteroid2.ySpeed * (asteroid2.mass - asteroid1.mass)/(asteroid1.mass + asteroid2.mass) + asteroid1.ySpeed * (2 * asteroid1.mass)/(asteroid1.mass + asteroid2.mass);
+		asteroid1.xSpeed = asteroid1.xSpeed * (asteroid1.mass - asteroid2.mass)/(asteroid1.mass + asteroid2.mass) + asteroid2.xSpeed * (2 * asteroid2.mass)/(asteroid1.mass + asteroid2.mass);
+		asteroid1.ySpeed = asteroid1.ySpeed * (asteroid1.mass - asteroid2.mass)/(asteroid1.mass + asteroid2.mass) + asteroid2.ySpeed * (2 * asteroid2.mass)/(asteroid1.mass + asteroid2.mass);
 		asteroid2.xSpeed = tempX;
 		asteroid2.ySpeed = tempY;
 		asteroidUpdate(asteroid1);
@@ -277,6 +316,10 @@ var keyPressed = function()
 	if (key.toString() === "d") {
 		dPress = true;
 	}
+
+	if (key.toString() === "r") {
+		rPress = true;
+	}
 };
 
 
@@ -296,6 +339,11 @@ var keyReleased = function()
 
 	if (key.toString() === "d") {
 		dPress = false;
+	}
+
+	if (key.toString() === "r") {
+		rPress = false;
+		fired = false;
 	}
 };
 
@@ -343,6 +391,12 @@ var shipState1 = function()
 	ship.move();
 };
 
+var laserState1 = function() {
+	lasers.forEach(drawLaser);
+	lasers.forEach(updateLaser);
+	lasers.forEach(checkLaserCollisions);
+}
+
 var asteroidState1 = function()
 {
 	if (frameCount%120 == 0) {
@@ -380,6 +434,7 @@ var draw = function()
 			pushMatrix();
 			translate(400-ship.x, 250-ship.y);
 			asteroidState1();
+			laserState1();
 			shipState1();
 			popMatrix();
 
