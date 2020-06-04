@@ -142,23 +142,23 @@ shipObj.prototype.draw = function() {
 	// ellipse(0, 6, 20, 20);
 	// ellipses used for collision detection
 
-	if (wPress === true && xPress === !true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
+	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
 	image(rockets1Img, 0, 22);
 	}
-	if (wPress === true && xPress === !true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
+	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
 	image(rockets2Img, 0, 22);
 	}
-	if (wPress === true && xPress === !true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
+	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
 	image(rockets3Img, 0, 22);
 	}
 
-	if (wPress === true  && xPress === true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
+	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
 	image(rocketsBoost1Img, 0, 22);
 	}
-	if (wPress === true  && xPress === true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
+	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
 	image(rocketsBoost2Img, 0, 22);
 	}
-	if (wPress === true  && xPress === true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
+	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
 	image(rocketsBoost3Img, 0, 22);
 	}
 
