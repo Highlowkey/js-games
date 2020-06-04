@@ -2,22 +2,24 @@ var sketchProc=function(processingInstance){ with (processingInstance){
 frameRate(60);
 size(800, 500);
 
-/*----------------------------------------------------------------------------------------------------CHANGE LOG
-BEFORE NO DATE:
-- changed asteroids to periodically spawn at periphery of screen
-- change asteroids to be removed when too far away from screen
-- realized this could mean we could hypothetically have no bounds on whole map
-- it would just procedurally generate asteroids/loot wherever the ship flies
-- added game over state (state 2, idk if thats ok just wanted to mess with)
-- added change log
+//----------------------------------------------------------------------------------------------------------------------------IMAGE LOADING
+var backgroundImg = loadImage('Game_ONE_background.png');
 
-MAY 30:
-- changed numAsteroids updating
-- collisions working
-- added sprites for asteroids and pseudo-random spawning
-- changed asteroid speed determination
-*/
+var titleImg = loadImage('Game_ONE_title.png');
+var startBTImg = loadImage('Game_ONE_start.png');
 
+var shipImg = loadImage('Game_ONE_ship.png');
+var rockets1Img = loadImage('Game_ONE_rockets1.png');
+var rockets2Img = loadImage('Game_ONE_rockets2.png');
+var rockets3Img = loadImage('Game_ONE_rockets3.png');
+var rocketsBoost1Img = loadImage('Game_ONE_rocketsBoost1.png');
+var rocketsBoost2Img = loadImage('Game_ONE_rocketsBoost2.png');
+var rocketsBoost3Img = loadImage('Game_ONE_rocketsBoost3.png');
+
+var asteroid31Img = loadImage('Game_ONE_asteroid31x31.png');
+var asteroid41Img = loadImage('Game_ONE_asteroid41x41.png');
+var asteroid51Img = loadImage('Game_ONE_asteroid51x51.png');
+var asteroid71Img = loadImage('Game_ONE_asteroid71x71.png');
 
 
 
@@ -122,7 +124,7 @@ var shipObj = function(x, y, speed) {
 	this.y = y;
 	this.speed = speed;
  	this.angle = 0;
-	this.img = loadImage("blackship.jpg");
+	this.img = shipImg;
 	this.health = 100;
 };
 
@@ -138,6 +140,27 @@ shipObj.prototype.draw = function() {
 	// ellipse(0, -10, 12, 12);
 	// ellipse(0, 6, 20, 20);
 	// ellipses used for collision detection
+
+	if (wPress === true && xPress === !true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
+	image(rockets1Img, 0, 22);
+	}
+	if (wPress === true && xPress === !true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
+	image(rockets2Img, 0, 22);
+	}
+	if (wPress === true && xPress === !true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
+	image(rockets3Img, 0, 22);
+	}
+
+	if (wPress === true  && xPress === true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
+	image(rocketsBoost1Img, 0, 22);
+	}
+	if (wPress === true  && xPress === true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
+	image(rocketsBoost2Img, 0, 22);
+	}
+	if (wPress === true  && xPress === true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
+	image(rocketsBoost3Img, 0, 22);
+	}
+
 	popMatrix();
 };
 
@@ -184,19 +207,19 @@ var asteroidObj = function(x, y, xSpeed, ySpeed, size, isLoot) {
 	switch(size) {
 		case 1:
 			this.rad = 31;
-			this.img = loadImage("31x31_asteroid.png");
+			this.img = asteroid31Img;
 			break;
 		case 2:
 			this.rad = 41;
-			this.img = loadImage("41x41_asteroid.png");
+			this.img = asteroid41Img;
 			break;
 		case 3:
 			this.rad = 51;
-			this.img = loadImage("51x51_asteroid.png");
+			this.img = asteroid51Img;
 			break;
 		case 4:
 			this.rad = 71;
-			this.img = loadImage("71x71_asteroid.png");
+			this.img = asteroid71Img;
 			break;
 		default:
 			println("shouldn't be here")
