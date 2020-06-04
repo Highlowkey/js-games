@@ -126,6 +126,7 @@ var shipObj = function(x, y, speed) {
  	this.angle = 0;
 	this.img = shipImg;
 	this.health = 100;
+	this.fuel = 100;
 };
 
 var ship = new shipObj(totalWidth/2, totalHeight/2, 2);
@@ -190,7 +191,16 @@ shipObj.prototype.move = function() {
 		fired = true;
 	}
 	if (xPress === true) {
-		this.speed = 4;
+		if (this.fuel > 0) {
+			this.speed = 5;
+			this.fuel -= .5;
+		}
+		else {
+			this.speed = 2;
+		}
+	}
+	if (frameCount % 10 === 0 && this.fuel < 100) {
+		this.fuel += .5;
 	}
 };
 
@@ -391,6 +401,7 @@ var keyReleased = function()
 	}
 	if (key.toString() === "x") {
 		xPress = false;
+		ship.speed = 2;
 	}
 };
 
@@ -464,6 +475,21 @@ var asteroidState1 = function()
 	// countAsteroid();
 };
 
+var UIState1 = function() {
+	fill(255, 0, 0);
+	textSize(20);
+	text("Score: " + score, 4, 20);
+	rectMode(CORNER);
+	rect(30, bottomBound - 30, ship.health, 20);
+	fill(0, 0, 0);
+	stroke(255, 255, 255);
+	strokeWeight(4);
+	rect(160, bottomBound - 30, 104, 20);
+	fill(0, 180, 255);
+	noStroke();
+	rect(162, bottomBound - 28, ship.fuel, 16);
+};
+
 
 
 //----------------------------------------------------------------------------------------------------------------------------DRAW FUNCTION
@@ -478,11 +504,7 @@ var draw = function()
 		case 1:
 			background(0, 0, 0);
 
-			// score text
-			fill(255, 0, 0);
-			textSize(20);
-			text("Score: " + score + " Shield: " + ship.health, 4, 20);
-
+			UIState1();
 			pushMatrix();
 			translate(400-ship.x, 250-ship.y);
 			asteroidState1();
