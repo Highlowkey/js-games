@@ -34,6 +34,7 @@ var sPress = false;
 var aPress = false;
 var dPress = false;
 var rPress = false;
+var xPress = false;
 var fired = false;
 
 var mouseLeftPress = false;
@@ -50,6 +51,9 @@ var totalWidth = rightBound * 2;
 var totalHeight = bottomBound * 2;
 
 var spawnLocation = 0; //used for asteroid spawning quadrant (0 - up, 1 - left, 2 - down, 3 - right)
+
+var framesUntilFirstSpawn = 60;
+var spawnAcceleration = 0;
 
 var score = 0;
 //-------------------------------------------------------------------------------------------
@@ -79,7 +83,6 @@ buttonObj.prototype.draw = function() {
 buttonObj.prototype.press = function() {
 	if (mouseLeftPress === true && mouseX < this.x + this.w/2 && mouseX > this.x - this.w/2 && mouseY < this.y + this.h/2 && mouseY > this.y -this.h/2) {
 		this.click = true;
-		println(this.click);
 	}
 };
 
@@ -120,6 +123,7 @@ var shipObj = function(x, y, speed) {
 	this.speed = speed;
  	this.angle = 0;
 	this.img = loadImage("blackship.jpg");
+	this.health = 100;
 };
 
 var ship = new shipObj(totalWidth/2, totalHeight/2, 2);
@@ -149,18 +153,21 @@ shipObj.prototype.move = function() {
 	}
 
 	if (aPress === true) {
-		this.angle -= .1;
+		this.angle -= .05;
 	}
 
 	if (dPress === true) {
-    this.angle += .1;
+    this.angle += .05;
 	}
 
 	if (rPress === true) {
 		if (fired === false) {
-			lasers.push(new laserObj(this.x, this.y, this.speed, this.angle));
+			lasers.push(new laserObj(this.x, this.y, this.speed + 2, this.angle));
 		}
 		fired = true;
+	}
+	if (xPress === true) {
+		this.speed = 4;
 	}
 };
 
@@ -228,21 +235,26 @@ var countAsteroid = function()
 };
 
 var addAsteroid = function() {
+	var willBeLoot = false;
+	var zeroOne = round(random(0,4));
+	if (zeroOne == 0) {
+		willBeLoot = true;
+	}
 	var size = round(random(1, 4));
-	var fastSpeed = random(0, 2);
+	var fastSpeed = random(0, 3/size);
 	var slowSpeed = random(-.5, .5);
 	switch(spawnLocation) {
 		case 0: //top of screen
-			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2 - 71, slowSpeed, fastSpeed, size, false));
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y - bottomBound/2 - 71, slowSpeed, fastSpeed, size, willBeLoot));
 			break;
 		case 1: //left of screen
-			asteroids.push(new asteroidObj(ship.x - rightBound/2 - 71, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, false));
+			asteroids.push(new asteroidObj(ship.x - rightBound/2 - 71, random(ship.y - bottomBound/2, ship.y + bottomBound/2), fastSpeed, slowSpeed, size, willBeLoot));
 			break;
 		case 2: //bottom of screen
-			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2 + 71, slowSpeed, -fastSpeed, size, false));
+			asteroids.push(new asteroidObj(random(ship.x - rightBound/2, ship.x + rightBound/2), ship.y + bottomBound/2 + 71, slowSpeed, -fastSpeed, size, willBeLoot));
 			break; //right of screen
 		case 3:
-			asteroids.push(new asteroidObj(ship.x + rightBound/2 + 71, random(ship.y - bottomBound/2, ship.y + bottomBound/2), -fastSpeed, slowSpeed, size, true));
+			asteroids.push(new asteroidObj(ship.x + rightBound/2 + 71, random(ship.y - bottomBound/2, ship.y + bottomBound/2), -fastSpeed, slowSpeed, size, willBeLoot));
 			spawnLocation = 0;
 			break;
 	}
@@ -264,6 +276,7 @@ var checkAllCollisions = function() {
 				checkAsteroidCollision(asteroids[i], asteroids[j]);
 			}
 		}
+		noCollisions = true;
 		checkShipCollision(asteroids[i]);
 	}
 };
@@ -272,8 +285,12 @@ var checkShipCollision = function(asteroid) {
 	if ((dist(asteroid.x, asteroid.y, ship.x, ship.y - 10) < (asteroid.rad + 12)/2) ||
 			 (dist(asteroid.x, asteroid.y, ship.x, ship.y + 6) < (asteroid.rad + 20)/2)) {
 		if (!asteroid.isLoot) {
-			$ = 2;
-			println("Game Over");
+			ship.health -= asteroid.rad;
+			asteroids.splice(asteroids.indexOf(asteroid), 1);
+			numAsteroids--;
+			if (ship.health < 0) {
+				$ = 2;
+			}
 		}
 		else {
 			score +=1 ;
@@ -320,6 +337,10 @@ var keyPressed = function()
 	if (key.toString() === "r") {
 		rPress = true;
 	}
+
+	if (key.toString() === "x") {
+		xPress = true;
+	}
 };
 
 
@@ -344,6 +365,9 @@ var keyReleased = function()
 	if (key.toString() === "r") {
 		rPress = false;
 		fired = false;
+	}
+	if (key.toString() === "x") {
+		xPress = false;
 	}
 };
 
@@ -399,8 +423,13 @@ var laserState1 = function() {
 
 var asteroidState1 = function()
 {
-	if (frameCount%120 == 0) {
+	println(framesUntilFirstSpawn);
+	if (frameCount%round(framesUntilFirstSpawn) == 0) {
 		addAsteroid();
+		if(framesUntilFirstSpawn > 30) {
+			framesUntilFirstSpawn -= spawnAcceleration;
+			spawnAcceleration += .01;
+		}
 	}
 
 	checkAllCollisions();
@@ -428,8 +457,8 @@ var draw = function()
 
 			// score text
 			fill(255, 0, 0);
-			textSize(45);
-			text(score, 10, 40);
+			textSize(20);
+			text("Score: " + score + " Shield: " + ship.health, 4, 20);
 
 			pushMatrix();
 			translate(400-ship.x, 250-ship.y);
