@@ -1,28 +1,6 @@
 var sketchProc=function(processingInstance){ with (processingInstance){
 frameRate(60);
 size(800, 500);
-
-//----------------------------------------------------------------------------------------------------------------------------IMAGE LOADING
-var backgroundImg = loadImage('Game_ONE_background.png');
-
-var titleImg = loadImage('Game_ONE_title.png');
-var startBTImg = loadImage('Game_ONE_start.png');
-
-var shipImg = loadImage('Game_ONE_ship.png');
-var rockets1Img = loadImage('Game_ONE_rockets1.png');
-var rockets2Img = loadImage('Game_ONE_rockets2.png');
-var rockets3Img = loadImage('Game_ONE_rockets3.png');
-var rocketsBoost1Img = loadImage('Game_ONE_rocketsBoost1.png');
-var rocketsBoost2Img = loadImage('Game_ONE_rocketsBoost2.png');
-var rocketsBoost3Img = loadImage('Game_ONE_rocketsBoost3.png');
-
-var asteroid31Img = loadImage('Game_ONE_asteroid31x31.png');
-var asteroid41Img = loadImage('Game_ONE_asteroid41x41.png');
-var asteroid51Img = loadImage('Game_ONE_asteroid51x51.png');
-var asteroid71Img = loadImage('Game_ONE_asteroid71x71.png');
-
-
-
 /*----------------------------------------------------------------------------------------------------------------------------GAME STATES
 0 = START
 1 = LEVEL ONE
@@ -58,12 +36,59 @@ var framesUntilFirstSpawn = 60;
 var spawnAcceleration = 0;
 
 var score = 0;
-//-------------------------------------------------------------------------------------------
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------IMAGE LOADING
+var backgroundImg = loadImage('Game_ONE_background.png');
+
+var titleImg = loadImage('Game_ONE_title.png');
+var startBTImg = loadImage('Game_ONE_start.png');
+
+var shipImg = loadImage('Game_ONE_ship.png');
+var rockets1Img = loadImage('Game_ONE_rockets1.png');
+var rockets2Img = loadImage('Game_ONE_rockets2.png');
+var rockets3Img = loadImage('Game_ONE_rockets3.png');
+var rocketsBoost1Img = loadImage('Game_ONE_rocketsBoost1.png');
+var rocketsBoost2Img = loadImage('Game_ONE_rocketsBoost2.png');
+var rocketsBoost3Img = loadImage('Game_ONE_rocketsBoost3.png');
+
+var asteroid31Img = loadImage('Game_ONE_asteroid31x31.png');
+var asteroid41Img = loadImage('Game_ONE_asteroid41x41.png');
+var asteroid51Img = loadImage('Game_ONE_asteroid51x51.png');
+var asteroid71Img = loadImage('Game_ONE_asteroid71x71.png');
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------ANIMATION FUNCTIONS
+var rocketsAnimation = function() {
+	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
+	image(rockets1Img, 0, 22);
+	}
+	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
+	image(rockets2Img, 0, 22);
+	}
+	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
+	image(rockets3Img, 0, 22);
+	}
+
+	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
+	image(rocketsBoost1Img, 0, 22);
+	}
+	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
+	image(rocketsBoost2Img, 0, 22);
+	}
+	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
+	image(rocketsBoost3Img, 0, 22);
+	}
+
+}; 
 
 
 
 //----------------------------------------------------------------------------------------------------------------------------BUTTON OBJECTS
-var buttonObj = function(x, y, w, h)  {
+var buttonObj = function(img, x, y, w, h)  {
+	this.img = img;
 	this.x = x;
 	this.y = y;
 	this.w = w;
@@ -71,15 +96,15 @@ var buttonObj = function(x, y, w, h)  {
 	this.click = false;
 };
 
-var startBT = new buttonObj (rightBound/2, bottomBound/2, 100, 50);
+var startBT = new buttonObj (startBTImg, rightBound/2, bottomBound/2, 144, 32);
 
 
 
 //-------------------------------------------------------------------------------------------BUTTON FUNCTIONS
 buttonObj.prototype.draw = function() {
 	fill(255, 0, 0);
-	rectMode(CENTER);
-	rect(this.x, this.y, this.w, this.h);
+	imageMode(CENTER);
+	image(this.img, this.x, this.y, this.w, this.h);
 };
 
 buttonObj.prototype.press = function() {
@@ -88,7 +113,7 @@ buttonObj.prototype.press = function() {
 	}
 };
 
-//-------------------------------------------------------------------------------------------LASER FUNCTIONS
+//----------------------------------------------------------------------------------------------------------------------------LASER OBJECTS
 var lasers = [];
 
 var laserObj = function(x, y, speed, angle) {
@@ -98,6 +123,7 @@ var laserObj = function(x, y, speed, angle) {
 	this.angle = angle;
 };
 
+//-------------------------------------------------------------------------------------------LASER FUNCTIONS
 var drawLaser = function(laser) {
 	fill(255, 0, 0);
 	ellipse(laser.x, laser.y, 10, 10);
@@ -138,30 +164,10 @@ shipObj.prototype.draw = function() {
 	rotate(this.angle);
 	imageMode(CENTER);
 	image(this.img, 0, 0);
+	rocketsAnimation();
 	// ellipse(0, -10, 12, 12);
 	// ellipse(0, 6, 20, 20);
 	// ellipses used for collision detection
-
-	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
-	image(rockets1Img, 0, 22);
-	}
-	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
-	image(rockets2Img, 0, 22);
-	}
-	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
-	image(rockets3Img, 0, 22);
-	}
-
-	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
-	image(rocketsBoost1Img, 0, 22);
-	}
-	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
-	image(rocketsBoost2Img, 0, 22);
-	}
-	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
-	image(rocketsBoost3Img, 0, 22);
-	}
-
 	popMatrix();
 };
 
@@ -231,9 +237,9 @@ var asteroidObj = function(x, y, xSpeed, ySpeed, size, isLoot) {
 			this.rad = 71;
 			this.img = asteroid71Img;
 			break;
-		default:
-			println("shouldn't be here")
-			break;
+		//default:
+		//	println("shouldn't be here")
+		//	break;
 	}
 
 	if (isLoot) {
@@ -252,6 +258,7 @@ var drawAsteroid = function(asteroid) {
 	if (asteroid.isLoot) {
 		fill(255, 255, 0);
 	}
+	ellipse(asteroid.x, asteroid.y, asteroid.rad, asteroid.rad);
 	imageMode(CENTER);
 	image(asteroid.img, asteroid.x, asteroid.y);
 };
@@ -429,8 +436,13 @@ var mouseReleased = function()
 
 
 //----------------------------------------------------------------------------------------------------------------------------0 CASE FUNCTIONS
-var buttonState0 = function()
-{
+var backgroundState0 = function() {
+	imageMode(CENTER);
+	image(backgroundImg, 0, 0, 1600, 1000);
+	image(titleImg, rightBound/2, bottomBound/5, 400, 70);
+};
+
+var buttonState0 = function() {
 	startBT.draw();
 	startBT.press();
 
@@ -442,35 +454,9 @@ var buttonState0 = function()
 
 
 //----------------------------------------------------------------------------------------------------------------------------1 CASE FUNCTIONS
-var shipState1 = function()
-{
-	ship.draw();
-	ship.move();
-};
-
-var laserState1 = function() {
-	lasers.forEach(drawLaser);
-	lasers.forEach(updateLaser);
-	lasers.forEach(checkLaserCollisions);
-}
-
-var asteroidState1 = function()
-{
-	if (frameCount%round(framesUntilFirstSpawn) == 0) {
-		addAsteroid();
-		if(framesUntilFirstSpawn > 30) {
-			framesUntilFirstSpawn -= spawnAcceleration;
-			spawnAcceleration += .01;
-		}
-	}
-
-	checkAllCollisions();
-
-	asteroids.forEach(drawAsteroid);
-	asteroids.forEach(asteroidUpdate);
-	asteroids.forEach(checkToRemoveAsteroid);
-
-	// countAsteroid();
+var backgroundState1 = function() {
+	imageMode(CENTER);
+	image(backgroundImg, -ship.x/4, -ship.y/4, 1600, 1000)
 };
 
 var UIState1 = function() {
@@ -488,6 +474,38 @@ var UIState1 = function() {
 	rect(162, bottomBound - 28, ship.fuel, 16);
 };
 
+var shipState1 = function()
+{
+	ship.draw();
+	ship.move();
+};
+
+var laserState1 = function() {
+	lasers.forEach(drawLaser);
+	lasers.forEach(updateLaser);
+	lasers.forEach(checkLaserCollisions);
+};
+
+var asteroidState1 = function()
+{
+	//println(framesUntilFirstSpawn);
+	if (frameCount%round(framesUntilFirstSpawn) == 0) {
+		addAsteroid();
+		if(framesUntilFirstSpawn > 30) {
+			framesUntilFirstSpawn -= spawnAcceleration;
+			spawnAcceleration += .01;
+		}
+	}
+
+	checkAllCollisions();
+
+	asteroids.forEach(drawAsteroid);
+	asteroids.forEach(asteroidUpdate);
+	asteroids.forEach(checkToRemoveAsteroid);
+
+	// countAsteroid();
+};
+
 
 
 //----------------------------------------------------------------------------------------------------------------------------DRAW FUNCTION
@@ -496,19 +514,22 @@ var draw = function()
 	switch($)
 	{
 		case 0:
+			backgroundState0();
+
 			buttonState0();
 			break;
 
 		case 1:
-			background(0, 0, 0);
-
-			UIState1();
+			backgroundState1();
+			
 			pushMatrix();
 			translate(400-ship.x, 250-ship.y);
 			asteroidState1();
 			laserState1();
 			shipState1();
 			popMatrix();
+
+			UIState1();
 
 			break;
 		case 2:
