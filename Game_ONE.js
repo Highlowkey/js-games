@@ -1,6 +1,12 @@
 var sketchProc=function(processingInstance){ with (processingInstance){
 frameRate(60);
 size(800, 500);
+
+// things to do
+// fix sPress
+// add wPress specifier to boost
+// get rid of asteroid ellipse
+// update UISTATE1
 /*----------------------------------------------------------------------------------------------------------------------------GAME STATES
 0 = START
 1 = LEVEL ONE
@@ -10,7 +16,6 @@ var $ = 0;
 
 //----------------------------------------------------------------------------------------------------------------------------VAR DEFINITION
 var wPress = false;
-var sPress = false;
 var aPress = false;
 var dPress = false;
 var rPress = false;
@@ -82,7 +87,7 @@ var rocketsAnimation = function() {
 	image(rocketsBoost3Img, 0, 22);
 	}
 
-}; 
+};
 
 
 
@@ -177,11 +182,6 @@ shipObj.prototype.move = function() {
     	this.x += this.speed * cos(this.angle-3.14/2);
 	}
 
-	if (sPress === true) {
-		this.y -= this.speed * sin(this.angle-3.14/2);
-    	this.x -= this.speed * cos(this.angle-3.14/2);
-	}
-
 	if (aPress === true) {
 		this.angle -= .05;
 	}
@@ -197,7 +197,7 @@ shipObj.prototype.move = function() {
 		fired = true;
 	}
 	if (xPress === true) {
-		if (this.fuel > 0) {
+		if (this.fuel > 0 && wPress === true) {
 			this.speed = 5;
 			this.fuel -= .5;
 		}
@@ -258,7 +258,6 @@ var drawAsteroid = function(asteroid) {
 	if (asteroid.isLoot) {
 		fill(255, 255, 0);
 	}
-	ellipse(asteroid.x, asteroid.y, asteroid.rad, asteroid.rad);
 	imageMode(CENTER);
 	image(asteroid.img, asteroid.x, asteroid.y);
 };
@@ -361,10 +360,6 @@ var keyPressed = function()
 		wPress = true;
 	}
 
-	if (key.toString() === "s") {
-		sPress = true;
-	}
-
 	if (key.toString() === "a") {
 		aPress = true;
 	}
@@ -387,10 +382,6 @@ var keyReleased = function()
 {
 	if (key.toString() === "w") {
 		wPress = false;
-	}
-
-	if (key.toString() === "s") {
-		sPress = false;
 	}
 
 	if (key.toString() === "a") {
@@ -460,18 +451,32 @@ var backgroundState1 = function() {
 };
 
 var UIState1 = function() {
+	// score text
 	fill(255, 0, 0);
-	textSize(20);
-	text("Score: " + score, 4, 20);
-	rectMode(CORNER);
-	rect(30, bottomBound - 30, ship.health, 20);
-	fill(0, 0, 0);
-	stroke(255, 255, 255);
-	strokeWeight(4);
-	rect(160, bottomBound - 30, 104, 20);
-	fill(0, 180, 255);
-	noStroke();
-	rect(162, bottomBound - 28, ship.fuel, 16);
+	var silom = loadFont("Courier", 22);
+	textFont(silom, 22);
+	text("SCORE: " + score, 4, 20);
+	// health bar
+		rectMode(CORNER);
+		// outline of bar
+		fill(0, 0, 0);
+		stroke(255, 255, 255);
+		strokeWeight(4);
+		rect(30, bottomBound - 30, 104, 20);
+		// red health
+		noStroke();
+		fill(255, 0, 0);
+		rect(32, bottomBound - 28, ship.health, 16);
+	// fuel bar
+		// outline of bar
+		fill(0, 0, 0);
+		stroke(255, 255, 255);
+		strokeWeight(4);
+		rect(160, bottomBound - 30, 104, 20);
+		// blue fuel
+		noStroke();
+		fill(0, 180, 255);
+		rect(162, bottomBound - 28, ship.fuel, 16);
 };
 
 var shipState1 = function()
@@ -521,7 +526,7 @@ var draw = function()
 
 		case 1:
 			backgroundState1();
-			
+
 			pushMatrix();
 			translate(400-ship.x, 250-ship.y);
 			asteroidState1();
