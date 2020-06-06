@@ -252,7 +252,6 @@ var drawAsteroid = function(asteroid) {
 	if (asteroid.isLoot) {
 		fill(255, 255, 0);
 	}
-	ellipse(asteroid.x, asteroid.y, asteroid.rad, asteroid.rad);
 	imageMode(CENTER);
 	image(asteroid.img, asteroid.x, asteroid.y);
 };
@@ -457,7 +456,6 @@ var laserState1 = function() {
 
 var asteroidState1 = function()
 {
-	println(framesUntilFirstSpawn);
 	if (frameCount%round(framesUntilFirstSpawn) == 0) {
 		addAsteroid();
 		if(framesUntilFirstSpawn > 30) {
