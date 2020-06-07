@@ -31,6 +31,7 @@ var leftBound = 0;
 var rightBound = 800;
 
 var numAsteroids = 0;
+var numTiles = 0;
 
 var totalWidth = rightBound * 2;
 var totalHeight = bottomBound * 2;
@@ -149,6 +150,44 @@ var checkLaserCollisions = function(laser) {
 	}
 };
 
+//-------------------------------------------------------------------------------------------BACKGROUND OBJECTS
+var backgroundTiles = [];
+
+var backgroundObj = function(initialX, initialY) {
+	this.x = initialX;
+	this.y = initialY;
+};
+
+backgroundObj.prototype.draw = function() {
+	imageMode(CENTER);
+	image(backgroundImg, this.x - ship.x/4, this.y - ship.y/4, 1600, 1000);
+}
+
+var initialBackground = new backgroundObj(0, 0);
+backgroundTiles.push(initialBackground);
+numTiles++;
+
+//-------------------------------------------------------------------------------------------LASER FUNCTIONS
+var drawLaser = function(laser) {
+	fill(255, 0, 0);
+	ellipse(laser.x, laser.y, 10, 10);
+};
+
+var updateLaser = function(laser) {
+	laser.y += laser.speed * sin(laser.angle-3.14/2);
+	laser.x += laser.speed * cos(laser.angle-3.14/2);
+};
+
+var checkLaserCollisions = function(laser) {
+	for (var i = 0; i < numAsteroids; i++) {
+		if (dist(laser.x, laser.y, asteroids[i].x, asteroids[i].y) < (asteroids[i].rad + 10)/2) {
+			lasers.splice(lasers.indexOf(laser), 1);
+			asteroids.splice(asteroids.indexOf(asteroids[i]), 1);
+			numAsteroids--;
+		}
+	}
+};
+
 //----------------------------------------------------------------------------------------------------------------------------SHIP OBJECTS
 var shipObj = function(x, y, speed) {
 	this.x = x;
@@ -160,7 +199,7 @@ var shipObj = function(x, y, speed) {
 	this.fuel = 100;
 };
 
-var ship = new shipObj(totalWidth/2, totalHeight/2, 2);
+var ship = new shipObj(0, 0, 2);
 
 //-------------------------------------------------------------------------------------------SHIP FUNCTIONS
 shipObj.prototype.draw = function() {
@@ -446,8 +485,9 @@ var buttonState0 = function() {
 
 //----------------------------------------------------------------------------------------------------------------------------1 CASE FUNCTIONS
 var backgroundState1 = function() {
-	imageMode(CENTER);
-	image(backgroundImg, -ship.x/4, -ship.y/4, 1600, 1000)
+	for (var i  = 0; i < numTiles; i++) {
+		backgroundTiles[i].draw();
+	}
 };
 
 var UIState1 = function() {
@@ -525,10 +565,10 @@ var draw = function()
 			break;
 
 		case 1:
-			backgroundState1();
 
 			pushMatrix();
 			translate(400-ship.x, 250-ship.y);
+			backgroundState1();
 			asteroidState1();
 			laserState1();
 			shipState1();
