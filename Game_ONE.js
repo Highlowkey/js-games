@@ -580,6 +580,7 @@ var laserState1 = function() {
 
 var asteroidState1 = function()
 {
+	println(numAsteroids);
 	if (frameCount%round(framesUntilFirstSpawn) == 0 && numAsteroids < 40) {
 		addAsteroid();
 		// if(framesUntilFirstSpawn > 5) {
@@ -604,6 +605,7 @@ var backgroundState2 = function() {
 	imageMode(CENTER);
 	image(backgroundImg, 0, 0, 1600, 1000);
 	image(youDiedImg, rightBound/2, bottomBound/5);
+	text("FINAL SCORE: " + score, rightBound/2, bottomBound/2);
 };
 
 var buttonState2 = function() {
@@ -625,7 +627,6 @@ var resetAllValues = function() {
 	ship.y = 0;
 
 	asteroids.splice(asteroids[0], numAsteroids);
-	numAsteroids = 0;
 };
 
 
@@ -655,8 +656,8 @@ var draw = function()
 
 			break;
 		case 2:
-			backgroundState2();
-			buttonState2();
+			backgroundState2();		
+			buttonState2();	
 
 			break;
 	}
