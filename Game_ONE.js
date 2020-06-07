@@ -119,38 +119,9 @@ buttonObj.prototype.press = function() {
 	}
 };
 
-//----------------------------------------------------------------------------------------------------------------------------LASER OBJECTS
-var lasers = [];
 
-var laserObj = function(x, y, speed, angle) {
-	this.x = x;
-	this.y = y;
-	this.speed = speed;
-	this.angle = angle;
-};
 
-//-------------------------------------------------------------------------------------------LASER FUNCTIONS
-var drawLaser = function(laser) {
-	fill(255, 0, 0);
-	ellipse(laser.x, laser.y, 10, 10);
-};
-
-var updateLaser = function(laser) {
-	laser.y += laser.speed * sin(laser.angle-3.14/2);
-	laser.x += laser.speed * cos(laser.angle-3.14/2);
-};
-
-var checkLaserCollisions = function(laser) {
-	for (var i = 0; i < numAsteroids; i++) {
-		if (dist(laser.x, laser.y, asteroids[i].x, asteroids[i].y) < (asteroids[i].rad + 10)/2) {
-			lasers.splice(lasers.indexOf(laser), 1);
-			asteroids.splice(asteroids.indexOf(asteroids[i]), 1);
-			numAsteroids--;
-		}
-	}
-};
-
-//-------------------------------------------------------------------------------------------BACKGROUND OBJECTS
+//---------------------------------------------------------------------------------------------------------------------------BACKGROUND OBJECTS
 var backgroundTiles = [];
 
 var backgroundObj = function(initialX, initialY) {
@@ -161,32 +132,18 @@ var backgroundObj = function(initialX, initialY) {
 backgroundObj.prototype.draw = function() {
 	imageMode(CENTER);
 	image(backgroundImg, this.x - ship.x/4, this.y - ship.y/4, 1600, 1000);
-}
-
-var initialBackground = new backgroundObj(0, 0);
-backgroundTiles.push(initialBackground);
-numTiles++;
-
-//-------------------------------------------------------------------------------------------LASER FUNCTIONS
-var drawLaser = function(laser) {
-	fill(255, 0, 0);
-	ellipse(laser.x, laser.y, 10, 10);
 };
 
-var updateLaser = function(laser) {
-	laser.y += laser.speed * sin(laser.angle-3.14/2);
-	laser.x += laser.speed * cos(laser.angle-3.14/2);
-};
-
-var checkLaserCollisions = function(laser) {
-	for (var i = 0; i < numAsteroids; i++) {
-		if (dist(laser.x, laser.y, asteroids[i].x, asteroids[i].y) < (asteroids[i].rad + 10)/2) {
-			lasers.splice(lasers.indexOf(laser), 1);
-			asteroids.splice(asteroids.indexOf(asteroids[i]), 1);
-			numAsteroids--;
+var addTiles = function() {
+	for (var i = 0; i < 20; i++) {
+		for (var j = 0; j < 20; j++) {
+			backgroundTiles.push(new backgroundObj(-16000 + 1600*i, -10000 + 1000*j));
+			numTiles++;
 		}
 	}
 };
+
+addTiles();
 
 //----------------------------------------------------------------------------------------------------------------------------SHIP OBJECTS
 var shipObj = function(x, y, speed) {
@@ -248,6 +205,41 @@ shipObj.prototype.move = function() {
 		this.fuel += .5;
 	}
 };
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------LASER OBJECTS
+var lasers = [];
+
+var laserObj = function(x, y, speed, angle) {
+	this.x = x;
+	this.y = y;
+	this.speed = speed;
+	this.angle = angle;
+};
+
+//-------------------------------------------------------------------------------------------LASER FUNCTIONS
+var drawLaser = function(laser) {
+	fill(255, 0, 0);
+	ellipse(laser.x, laser.y, 10, 10);
+};
+
+var updateLaser = function(laser) {
+	laser.y += laser.speed * sin(laser.angle-3.14/2);
+	laser.x += laser.speed * cos(laser.angle-3.14/2);
+};
+
+var checkLaserCollisions = function(laser) {
+	for (var i = 0; i < numAsteroids; i++) {
+		if (dist(laser.x, laser.y, asteroids[i].x, asteroids[i].y) < (asteroids[i].rad + 10)/2) {
+			lasers.splice(lasers.indexOf(laser), 1);
+			asteroids.splice(asteroids.indexOf(asteroids[i]), 1);
+			numAsteroids--;
+		}
+	}
+};
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------ASTEROID OBJECTS
 var asteroidObj = function(x, y, xSpeed, ySpeed, size, isLoot) {
