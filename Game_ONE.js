@@ -18,8 +18,7 @@ var $ = 0;
 var wPress = false;
 var aPress = false;
 var dPress = false;
-var rPress = false;
-var xPress = false;
+var spacePress = false;
 var fired = false;
 
 var mouseLeftPress = false;
@@ -68,23 +67,23 @@ var asteroid71Img = loadImage('Game_ONE_asteroid71x71.png');
 
 //----------------------------------------------------------------------------------------------------------------------------ANIMATION FUNCTIONS
 var rocketsAnimation = function() {
-	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
+	if (wPress === true && (spacePress === !true || ship.fuel <= 1) && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
 	image(rockets1Img, 0, 22);
 	}
-	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
+	if (wPress === true && (spacePress === !true || ship.fuel <= 1) && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
 	image(rockets2Img, 0, 22);
 	}
-	if (wPress === true && (xPress === !true || ship.fuel <= 1) && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
+	if (wPress === true && (spacePress === !true || ship.fuel <= 1) && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
 	image(rockets3Img, 0, 22);
 	}
 
-	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
+	if (ship.fuel > 1 && wPress === true  && spacePress === true && (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3 )) {
 	image(rocketsBoost1Img, 0, 22);
 	}
-	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
+	if (ship.fuel > 1 && wPress === true  && spacePress === true && (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7 )) {
 	image(rocketsBoost2Img, 0, 22);
 	}
-	if (ship.fuel > 1 && wPress === true  && xPress === true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
+	if (ship.fuel > 1 && wPress === true  && spacePress === true && (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11 )) {
 	image(rocketsBoost3Img, 0, 22);
 	}
 
@@ -186,13 +185,16 @@ shipObj.prototype.move = function() {
     this.angle += .05;
 	}
 
-	if (rPress === true) {
+	if (mouseLeftPress === true) {
 		if (fired === false) {
 			lasers.push(new laserObj(this.x, this.y, this.speed + 2, this.angle));
 		}
 		fired = true;
 	}
-	if (xPress === true) {
+	if (!mouseLeftPress) {
+		fired = false;
+	}
+	if (spacePress === true) {
 		if (this.fuel > 0 && wPress === true) {
 			this.speed = 5;
 			this.fuel -= .5;
@@ -238,7 +240,6 @@ var checkLaserCollisions = function(laser) {
 		}
 	}
 };
-
 
 
 //----------------------------------------------------------------------------------------------------------------------------ASTEROID OBJECTS
@@ -399,12 +400,8 @@ var keyPressed = function()
 		dPress = true;
 	}
 
-	if (key.toString() === "r") {
-		rPress = true;
-	}
-
-	if (key.toString() === "x") {
-		xPress = true;
+	if (key.toString() === " ") {
+		spacePress = true;
 	}
 };
 
@@ -423,12 +420,8 @@ var keyReleased = function()
 		dPress = false;
 	}
 
-	if (key.toString() === "r") {
-		rPress = false;
-		fired = false;
-	}
-	if (key.toString() === "x") {
-		xPress = false;
+	if (key.toString() === " ") {
+		spacePress = false;
 		ship.speed = 2;
 	}
 };
