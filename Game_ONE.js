@@ -95,36 +95,38 @@ var rocketsAnimation = function() {
 
 };
 
-var explosionAnimation = function(asteroidX, asteroidY) {
-	while  (frameCount%12 === 0 || frameCount%12 === 1 || frameCount%12 === 2 || frameCount%12 === 3) {
+var explosionAnimation = function(asteroid) {
+	if  (asteroid.framesAtStart%24 === 0 || asteroid.framesAtStart%24 === 1 || asteroid.framesAtStart%24 === 2 || asteroid.framesAtStart%24 === 3) {
 		imageMode(CENTER);
-		image(explosion1Img, asteroidX, asteroidY);
+		image(explosion1Img, asteroid.x, asteroid.y);
 	}
 
-	while (frameCount%12 === 4 || frameCount%12 === 5 || frameCount%12 === 6 || frameCount%12 === 7) {
+	if (asteroid.framesAtStart%24 === 4 || asteroid.framesAtStart%24 === 5 || asteroid.framesAtStart%24 === 6 || asteroid.framesAtStart%24 === 7) {
 		imageMode(CENTER);
-		image(explosion2Img, asteroidX, asteroidY);
+		image(explosion2Img, asteroid.x, asteroid.y);
 	}
 
-	while (frameCount%12 === 8 || frameCount%12 === 9 || frameCount%12 === 10 || frameCount%12 === 11) {
+	if (asteroid.framesAtStart%24 === 8 || asteroid.framesAtStart%24 === 9 || asteroid.framesAtStart%24 === 10 || asteroid.framesAtStart%24 === 11) {
 		imageMode(CENTER);
-		image(explosion3Img, asteroidX, asteroidY);
+		image(explosion3Img, asteroid.x, asteroid.y);
 	}
 
-	while (frameCount%12 === 12 || frameCount%12 === 13 || frameCount%12 === 14 || frameCount%12 === 15) {
+	if (asteroid.framesAtStart%24 === 12 || asteroid.framesAtStart%24 === 13 || asteroid.framesAtStart%24 === 14 || asteroid.framesAtStart%24 === 15) {
 		imageMode(CENTER);
-		image(explosion4Img, asteroidX, asteroidY);
+		image(explosion4Img, asteroid.x, asteroid.y);
 	}
 
-	while (frameCount%12 === 16 || frameCount%12 === 17 || frameCount%12 === 18 || frameCount%12 === 19) {
+	if (asteroid.framesAtStart%24 === 16 || asteroid.framesAtStart%24 === 17 || asteroid.framesAtStart%24 === 18 || asteroid.framesAtStart%24 === 19) {
 		imageMode(CENTER);
-		image(explosion5Img, asteroidX, asteroidY);
+		image(explosion5Img, asteroid.x, asteroid.y);
 	}
 
-	while (frameCount%12 === 20 || frameCount%12 === 21 || frameCount%12 === 22 || frameCount%12 === 23) {
+	if (asteroid.framesAtStart%24 === 20 || asteroid.framesAtStart%24 === 21 || asteroid.framesAtStart%24 === 22 || asteroid.framesAtStart%24 === 23) {
 		imageMode(CENTER);
-		image(explosion6Img, asteroidX, asteroidY);
+		image(explosion6Img, asteroid.x, asteroid.y);
+		asteroid.destroy = true;
 	}
+	asteroid.framesAtStart++;
 };
 
 
@@ -256,12 +258,15 @@ var laserObj = function(x, y, speed, angle) {
 	this.y = y;
 	this.speed = speed;
 	this.angle = angle;
+	this.img = loadImage("gunshot.png")
 };
 
 //-------------------------------------------------------------------------------------------LASER FUNCTIONS
 var drawLaser = function(laser) {
 	fill(255, 0, 0);
-	ellipse(laser.x, laser.y, 10, 10);
+	// ellipse(laser.x, laser.y, 10, 10);
+	imageMode(CENTER);
+	image(laser.img, laser.x, laser.y);
 };
 
 var updateLaser = function(laser) {
@@ -273,7 +278,8 @@ var checkLaserCollisions = function(laser) {
 	for (var i = 0; i < numAsteroids; i++) {
 		if (dist(laser.x, laser.y, asteroids[i].x, asteroids[i].y) < (asteroids[i].rad + 10)/2) {
 			lasers.splice(lasers.indexOf(laser), 1);
-			asteroids.splice(asteroids.indexOf(asteroids[i]), 1);
+			asteroids[i].explosion = true;
+			asteroids[i].framesAtStart = 0;
 			numAsteroids--;
 		}
 	}
@@ -290,6 +296,8 @@ var asteroidObj = function(x, y, xSpeed, ySpeed, size, isLoot) {
 	this.isLoot = isLoot;
 	this.numHits = 0;
 	this.explosion = false;
+	this.framesAtStart;
+	this.destroy = false;
 
 	switch(size) {
 		case 1:
@@ -325,12 +333,20 @@ var asteroids = [];
 
 //-------------------------------------------------------------------------------------------ASTEROID FUNCTIONS
 var drawAsteroid = function(asteroid) {
-	fill(255, 255, 255);
-	if (asteroid.isLoot) {
-		fill(255, 255, 0);
+	if (asteroid.explosion) {
+		explosionAnimation(asteroid);
+		if (asteroid.destroy) {
+			asteroids.splice(asteroids.indexOf(asteroid), 1);
+		}
 	}
-	imageMode(CENTER);
-	image(asteroid.img, asteroid.x, asteroid.y);
+	else {
+		fill(255, 255, 255);
+		if (asteroid.isLoot) {
+			fill(255, 255, 0);
+		}
+		imageMode(CENTER);
+		image(asteroid.img, asteroid.x, asteroid.y);
+	}
 };
 
 var asteroidUpdate = function(asteroid) {
@@ -393,10 +409,11 @@ var checkAllCollisions = function() {
 var checkShipCollision = function(asteroid) {
 	if (((dist(asteroid.x, asteroid.y, ship.x, ship.y - 10) < (asteroid.rad + 12)/2) ||
 			 (dist(asteroid.x, asteroid.y, ship.x, ship.y + 6) < (asteroid.rad + 20)/2)) &&
-			 frameCount - framesAtStart > 60) {
+			 frameCount - framesAtStart > 60 && asteroid.explosion == false) {
 		if (!asteroid.isLoot) {
 			ship.health -= asteroid.rad;
-			asteroids.splice(asteroids.indexOf(asteroid), 1);
+			asteroid.explosion = true;
+			asteroid.framesAtStart = 0;
 			numAsteroids--;
 			if (ship.health < 0) {
 				$ = 2;
