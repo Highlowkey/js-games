@@ -37,8 +37,10 @@ var totalHeight = bottomBound * 2;
 
 var spawnLocation = 0; //used for asteroid spawning quadrant (0 - up, 1 - left, 2 - down, 3 - right)
 
-var framesUntilFirstSpawn = 60;
+var framesUntilFirstSpawn = 30;
 var spawnAcceleration = 0;
+
+var framesAtStart;
 
 var score = 0;
 
@@ -186,7 +188,7 @@ shipObj.prototype.move = function() {
 	}
 
 	if (mouseLeftPress === true) {
-		if (fired === false) {
+		if (fired === false && frameCount - framesAtStart > 10) {
 			lasers.push(new laserObj(this.x, this.y, this.speed + 2, this.angle));
 		}
 		fired = true;
@@ -352,8 +354,9 @@ var checkAllCollisions = function() {
 };
 
 var checkShipCollision = function(asteroid) {
-	if ((dist(asteroid.x, asteroid.y, ship.x, ship.y - 10) < (asteroid.rad + 12)/2) ||
-			 (dist(asteroid.x, asteroid.y, ship.x, ship.y + 6) < (asteroid.rad + 20)/2)) {
+	if (((dist(asteroid.x, asteroid.y, ship.x, ship.y - 10) < (asteroid.rad + 12)/2) ||
+			 (dist(asteroid.x, asteroid.y, ship.x, ship.y + 6) < (asteroid.rad + 20)/2)) &&
+			 frameCount - framesAtStart > 60) {
 		if (!asteroid.isLoot) {
 			ship.health -= asteroid.rad;
 			asteroids.splice(asteroids.indexOf(asteroid), 1);
@@ -463,6 +466,7 @@ var buttonState0 = function() {
 
 	if (startBT.click === true) {
 		$ = 1;
+		framesAtStart = frameCount;
 	}
 };
 
@@ -518,13 +522,13 @@ var laserState1 = function() {
 
 var asteroidState1 = function()
 {
-	//println(framesUntilFirstSpawn);
-	if (frameCount%round(framesUntilFirstSpawn) == 0) {
+	println(numAsteroids);
+	if (frameCount%round(framesUntilFirstSpawn) == 0 && numAsteroids < 40) {
 		addAsteroid();
-		if(framesUntilFirstSpawn > 30) {
-			framesUntilFirstSpawn -= spawnAcceleration;
-			spawnAcceleration += .01;
-		}
+		// if(framesUntilFirstSpawn > 5) {
+		// 	framesUntilFirstSpawn -= spawnAcceleration;
+		// 	spawnAcceleration += 1;
+		// }
 	}
 
 	checkAllCollisions();
@@ -544,8 +548,8 @@ var draw = function()
 	switch($)
 	{
 		case 0:
+			asteroidState1();
 			backgroundState0();
-
 			buttonState0();
 			break;
 
