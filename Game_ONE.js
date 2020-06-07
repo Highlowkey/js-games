@@ -199,6 +199,7 @@ var shipObj = function(x, y, speed) {
 };
 
 var ship = new shipObj(0, 0, 2);
+var playAgainBT = new buttonObj (playAgainBTImg, rightBound/2, 3 * bottomBound/4, 260, 38);
 
 //-------------------------------------------------------------------------------------------SHIP FUNCTIONS
 shipObj.prototype.draw = function() {
