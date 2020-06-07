@@ -69,6 +69,9 @@ var explosion4Img = loadImage('Game_ONE_explosion4.png');
 var explosion5Img = loadImage('Game_ONE_explosion5.png');
 var explosion6Img = loadImage('Game_ONE_explosion6.png');
 
+var youDiedImg = loadImage('Game_ONE_youdied.png');
+var playAgainBTImg = loadImage('Game_ONE_playagain.png');
+
 
 
 //----------------------------------------------------------------------------------------------------------------------------ANIMATION FUNCTIONS
@@ -596,6 +599,36 @@ var asteroidState1 = function()
 
 
 
+//----------------------------------------------------------------------------------------------------------------------------2 CASE FUNCTIONS
+var backgroundState2 = function() {
+	imageMode(CENTER);
+	image(backgroundImg, 0, 0, 1600, 1000);
+	image(youDiedImg, rightBound/2, bottomBound/5);
+};
+
+var buttonState2 = function() {
+	playAgainBT.draw();
+	playAgainBT.press();
+
+	if (playAgainBT.click === true) {
+		$ = 1;
+		resetAllValues();
+	}
+};
+
+var resetAllValues = function() {
+	ship.health = 100;
+	ship.fuel = 100;
+	score = 0;
+
+	ship.x = 0;
+	ship.y = 0;
+
+	asteroids.splice(asteroids[0], numAsteroids);
+};
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------DRAW FUNCTION
 var draw = function()
 {
@@ -621,7 +654,10 @@ var draw = function()
 
 			break;
 		case 2:
-			background(255, 255, 255);
+			backgroundState2();		
+			buttonState2();	
+
+			break;
 	}
 };
 
