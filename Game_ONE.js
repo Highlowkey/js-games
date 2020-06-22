@@ -341,6 +341,7 @@ var drawAsteroid = function(asteroid) {
 		explosionAnimation(asteroid);
 		if (asteroid.destroy) {
 			asteroids.splice(asteroids.indexOf(asteroid), 1);
+			numAsteroids--;
 		}
 	}
 	else {
