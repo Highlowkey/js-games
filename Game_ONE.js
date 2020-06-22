@@ -432,7 +432,6 @@ var checkShipCollision = function(asteroid) {
 
 var checkAsteroidCollision = function(asteroid1, asteroid2) {
 	if (dist(asteroid1.x, asteroid1.y, asteroid2.x, asteroid2.y) < (asteroid1.rad + asteroid2.rad)/2) {
-		println("book");
 		var tempX = asteroid2.xSpeed * (asteroid2.mass - asteroid1.mass)/(asteroid1.mass + asteroid2.mass) + asteroid1.xSpeed * (2 * asteroid1.mass)/(asteroid1.mass + asteroid2.mass);
 		var tempY = asteroid2.ySpeed * (asteroid2.mass - asteroid1.mass)/(asteroid1.mass + asteroid2.mass) + asteroid1.ySpeed * (2 * asteroid1.mass)/(asteroid1.mass + asteroid2.mass);
 		asteroid1.xSpeed = asteroid1.xSpeed * (asteroid1.mass - asteroid2.mass)/(asteroid1.mass + asteroid2.mass) + asteroid2.xSpeed * (2 * asteroid2.mass)/(asteroid1.mass + asteroid2.mass);
