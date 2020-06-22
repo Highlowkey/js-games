@@ -284,7 +284,6 @@ var checkLaserCollisions = function(laser) {
 			lasers.splice(lasers.indexOf(laser), 1);
 			asteroids[i].explosion = true;
 			asteroids[i].framesAtStart = 0;
-			numAsteroids--;
 		}
 	}
 };
